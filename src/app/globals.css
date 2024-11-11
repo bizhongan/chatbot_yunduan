@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 240, 242, 245;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #0070F3, #00C6FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient 8s linear infinite;
+}
+
+@layer components {
+  .chat-input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply shadow-sm transition-all duration-200;
+    @apply hover:border-blue-300;
+    @apply bg-white/90 backdrop-blur-sm;
+  }
+
+  .chat-input-container {
+    @apply relative w-full mx-auto p-4;
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50;
+    @apply rounded-2xl shadow-lg;
+  }
+
+  .send-button {
+    @apply absolute right-6 bottom-6 px-4 py-2;
+    @apply bg-gradient-to-r from-blue-600 to-purple-600;
+    @apply text-white rounded-lg;
+    @apply hover:opacity-90 transition-all duration-200;
+    @apply flex items-center gap-2 shadow-md;
+  }
+}
