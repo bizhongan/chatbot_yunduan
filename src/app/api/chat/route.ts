@@ -1,33 +1,23 @@
 import { NextResponse } from 'next/server'
 
-// 从环境变量中获取配置
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY
-const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL
-
-if (!DEEPSEEK_API_KEY) {
-  throw new Error('Missing DEEPSEEK_API_KEY environment variable')
-}
-
-if (!DEEPSEEK_API_URL) {
-  throw new Error('Missing DEEPSEEK_API_URL environment variable')
-}
+// 直接定义 API URL 和 API Key
+const API_URL = 'https://api.deepseek.com/v1/chat/completions'
+const API_KEY = 'sk-851b668317054a83abeaf19acd85d9e0'
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json()
 
-    // 创建编码器和解码器
     const encoder = new TextEncoder()
     const decoder = new TextDecoder()
     const stream = new TransformStream()
     const writer = stream.writable.getWriter()
 
-    // 调用 DeepSeek API
-    const response = await fetch(DEEPSEEK_API_URL, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
@@ -55,7 +45,6 @@ export async function POST(req: Request) {
           const { done, value } = await reader.read()
           if (done) break
 
-          // 使用 decoder 而不是 encoder 来解码
           const chunk = decoder.decode(value)
           const lines = chunk
             .split('\n')
