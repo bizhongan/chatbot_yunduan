@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import ChatInput from '@/components/ChatInput'
+import styles from './Chat.module.css'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -13,6 +14,7 @@ const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [partialResponse, setPartialResponse] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -21,6 +23,64 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // 复制整个消息内容
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('已复制到剪贴板')
+    } catch (err) {
+      console.error('复制失败:', err)
+    }
+  }
+
+  // 停止生成回答
+  const handleStopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+      setIsLoading(false)
+      if (partialResponse) {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: partialResponse
+        }])
+        setPartialResponse("")
+      }
+    }
+  }
+
+  const formatMessage = (content: string) => {
+    return (
+      <div className={styles.messageContent}>
+        <div className={styles.messageActions}>
+          <button
+            onClick={() => handleCopy(content)}
+            className={styles.copyButton}
+          >
+            复制全部
+          </button>
+        </div>
+        {content.split(/```([\s\S]*?)```/).map((part, index) => {
+          if (index % 2 === 0) {
+            return <p key={index} className="whitespace-pre-wrap leading-relaxed">{part}</p>
+          } else {
+            return (
+              <pre key={index}>
+                <button 
+                  onClick={() => handleCopy(part.trim())}
+                  className={styles.codeCopyButton}
+                >
+                  复制代码
+                </button>
+                <code>{part.trim()}</code>
+              </pre>
+            )
+          }
+        })}
+      </div>
+    )
+  }
 
   const handleSubmit = async (message: string) => {
     if (!message.trim() || isLoading) return
@@ -32,15 +92,18 @@ const ChatPage: React.FC = () => {
       setMessages(newMessages)
       setPartialResponse("")
 
+      // 创建新的 AbortController
+      abortControllerRef.current = new AbortController()
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages }),
+        signal: abortControllerRef.current.signal
       })
 
       if (!response.ok) throw new Error('API 请求失败')
       
-      // 处理流式响应
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
       
@@ -63,46 +126,54 @@ const ChatPage: React.FC = () => {
       }])
       setPartialResponse("")
 
-    } catch (error) {
-      console.error('API 调用错误:', error)
-      setMessages([...messages, {
-        role: 'assistant',
-        content: '抱歉，发生了一些错误。请稍后再试。'
-      }])
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('回答生成已停止')
+      } else {
+        console.error('API 调用错误:', error)
+        setMessages([...messages, {
+          role: 'assistant',
+          content: '抱歉，发生了一些错误。请稍后再试。'
+        }])
+      }
     } finally {
       setIsLoading(false)
+      abortControllerRef.current = null
     }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className={styles.chatContainer}>
       {/* Header */}
-      <header className="bg-white/70 backdrop-blur-lg border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg"></div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                DeepSeek Chat
-              </span>
-            </Link>
+      <header className={styles.header}>
+        <Link href="/" className={styles.logo}>
+          云端AI助手
+        </Link>
+        <div className={styles.headerActions}>
+          {isLoading && (
             <button 
-              onClick={() => setMessages([])}
-              className="px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+              onClick={handleStopGeneration}
+              className={styles.stopButton}
             >
-              清空对话
+              停止生成
             </button>
-          </div>
+          )}
+          <button 
+            onClick={() => setMessages([])}
+            className={styles.clearButton}
+          >
+            清空对话
+          </button>
         </div>
       </header>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <div className={styles.messagesContainer}>
+        <div className={styles.messages}>
           {messages.length === 0 ? (
-            <div className="text-center text-gray-500 mt-20">
+            <div className={styles.welcomeMessage}>
               <div className="text-6xl mb-4">👋</div>
-              <p className="text-xl">你好！我是 DeepSeek AI 助手</p>
+              <p className="text-xl">你好！我是云端小助手</p>
               <p className="text-gray-400 mt-2">让我们开始对话吧！</p>
             </div>
           ) : (
@@ -110,27 +181,19 @@ const ChatPage: React.FC = () => {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`${styles.message} ${message.role === 'user' ? styles.userMessage : styles.assistantMessage}`}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-6 py-4 ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                        : 'bg-white/70 backdrop-blur-sm border border-gray-100 shadow-lg'
-                    }`}
-                  >
+                  {message.role === 'user' ? (
                     <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                  </div>
+                  ) : (
+                    formatMessage(message.content)
+                  )}
                 </div>
               ))}
               {partialResponse && (
-                <div className="flex justify-start">
-                  <div className="max-w-[80%] rounded-2xl px-6 py-4 bg-white/70 backdrop-blur-sm border border-gray-100 shadow-lg">
-                    <p className="whitespace-pre-wrap leading-relaxed">
-                      {partialResponse}
-                      <span className="inline-block w-2 h-4 ml-1 bg-blue-500 animate-pulse"></span>
-                    </p>
-                  </div>
+                <div className={styles.partialResponse}>
+                  {formatMessage(partialResponse)}
+                  <span className="inline-block w-2 h-4 ml-1 bg-blue-500 animate-pulse"></span>
                 </div>
               )}
             </>
@@ -140,13 +203,11 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Input Form */}
-      <div className="border-t border-gray-100 bg-white/70 backdrop-blur-lg">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <ChatInput 
-            onSend={handleSubmit} 
-            disabled={isLoading}
-          />
-        </div>
+      <div className={styles.inputContainer}>
+        <ChatInput 
+          onSend={handleSubmit} 
+          disabled={isLoading}
+        />
       </div>
     </div>
   )

@@ -1,0 +1,56 @@
+.form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.input {
+  flex: 1;
+  height: 50px;
+  padding: 0 1.5rem;
+  font-size: 1rem;
+  color: #333;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 50px;
+  padding: 0 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button svg {
+  width: 20px;
+  height: 20px;
+} 
