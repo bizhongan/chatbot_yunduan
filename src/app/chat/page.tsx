@@ -450,6 +450,18 @@ const ChatPage: React.FC = () => {
             </Link>
           </div>
           <div className={styles.headerRight}>
+            {/* 添加存档按钮 */}
+            {messages.length > 0 && (
+              <button 
+                onClick={handleArchive}
+                className={styles.archiveButton}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" />
+                </svg>
+                存档
+              </button>
+            )}
             {/* 用户信息 */}
             {user && (
               <div className={styles.userInfo}>
@@ -488,18 +500,6 @@ const ChatPage: React.FC = () => {
                 清空对话
               </button>
             </div>
-            {/* 添加存档按钮 */}
-            {messages.length > 0 && (
-              <button 
-                onClick={handleArchive}
-                className={styles.archiveButton}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={styles.archiveIcon}>
-                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" />
-                </svg>
-                存档对话
-              </button>
-            )}
           </div>
         </header>
 
