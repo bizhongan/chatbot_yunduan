@@ -24,6 +24,14 @@ interface ChatHistory {
   timestamp: string;
 }
 
+// 修改类型定义
+interface CodeProps {
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
+}
+
 const ChatPage: React.FC = () => {
   const { user } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
@@ -83,35 +91,33 @@ const ChatPage: React.FC = () => {
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]}
           components={{
-            // 自定义代码块渲染
-            code({node, inline, className, children, ...props}) {
+            code: ({ className, children, ...props }) => {
               const match = /language-(\w+)/.exec(className || '')
-              if (!inline && match) {
-                return (
-                  <pre className={className}>
-                    <button 
-                      onClick={() => handleCopy(String(children))}
-                      className={styles.codeCopyButton}
-                    >
-                      复制代码
-                    </button>
-                    <code {...props}>{children}</code>
-                  </pre>
-                )
-              }
-              return <code className={className} {...props}>{children}</code>
+              const isInline = !match
+              
+              return isInline ? (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              ) : (
+                <pre className={className}>
+                  <button 
+                    onClick={() => handleCopy(String(children))}
+                    className={styles.codeCopyButton}
+                  >
+                    复制代码
+                  </button>
+                  <code {...props}>{children}</code>
+                </pre>
+              )
             },
-            // 自定义标题渲染
-            h1: ({node, ...props}) => <h1 className={styles.heading1} {...props} />,
-            h2: ({node, ...props}) => <h2 className={styles.heading2} {...props} />,
-            h3: ({node, ...props}) => <h3 className={styles.heading3} {...props} />,
-            // 自定义段落渲染
-            p: ({node, ...props}) => <p className={styles.paragraph} {...props} />,
-            // 自定义列表渲染
-            ul: ({node, ...props}) => <ul className={styles.list} {...props} />,
-            li: ({node, ...props}) => <li className={styles.listItem} {...props} />,
-            // 自定义引用渲染
-            blockquote: ({node, ...props}) => <blockquote className={styles.blockquote} {...props} />,
+            h1: ({ children }) => <h1 className={styles.heading1}>{children}</h1>,
+            h2: ({ children }) => <h2 className={styles.heading2}>{children}</h2>,
+            h3: ({ children }) => <h3 className={styles.heading3}>{children}</h3>,
+            p: ({ children }) => <p className={styles.paragraph}>{children}</p>,
+            ul: ({ children }) => <ul className={styles.list}>{children}</ul>,
+            li: ({ children }) => <li className={styles.listItem}>{children}</li>,
+            blockquote: ({ children }) => <blockquote className={styles.blockquote}>{children}</blockquote>,
           }}
         >
           {content}
@@ -261,7 +267,7 @@ const ChatPage: React.FC = () => {
       
       setChatHistories(histories);
     } catch (error) {
-      console.error('加载聊天历史���败:', error);
+      console.error('加载聊天历史败:', error);
     }
   };
 
