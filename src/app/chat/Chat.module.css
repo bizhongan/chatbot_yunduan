@@ -16,9 +16,21 @@
     align-items: center;
     position: fixed;  /* 固定在顶部 */
     top: 0;
-    left: 0;
+    left: 250px;  /* 修改这里，让header不遮挡侧边栏 */
     right: 0;
     z-index: 10;
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  @keyframes slideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   .logo {
@@ -46,9 +58,9 @@
   .messagesContainer {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
-    margin-top: 4rem;  /* 为固定的header留出空间 */
-    margin-bottom: 9rem;  /* 增加底部边距，为更大的输入框留出空间 */
+    padding: 1rem 2rem;
+    margin-top: 4rem;  /* 为顶部导航栏留出空间 */
+    padding-bottom: 100px;  /* 为输入框留出空间 */
   }
   
   .messages {
@@ -61,42 +73,175 @@
     text-align: center;
     color: #555;
     margin-top: 20vh;  /* 欢迎消息垂直居中 */
+    animation: messagePopIn 0.5s ease-out;
+  }
+  
+  @keyframes messagePopIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
   
   .message {
-    padding: 1.5rem;
-    border-radius: 12px;
+    padding: 2.5rem 3rem;  /* 增加内边距 */
+    border-radius: 16px;
     max-width: 85%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    white-space: pre-wrap;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', Georgia, serif;  /* 使用更适合论文的字体 */
+    line-height: 1.8;
+    background: #ffffff;
+    animation: messagePopIn 0.3s ease-out;
+    transition: all 0.3s ease;
+  }
+  
+  .message:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   }
   
   .message pre {
-    background: #1e1e1e;
-    padding: 1rem;
+    background: #2d3748;
+    padding: 1.5rem;
     border-radius: 8px;
     overflow-x: auto;
-    margin: 1rem 0;
-    position: relative;
+    margin: 1.5rem 0;
+    border: 1px solid #4a5568;
   }
   
-  .message pre code {
-    color: #d4d4d4;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9rem;
+  .message code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+  }
+  
+  .message h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 1.5rem 0;
+    color: #1a202c;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  .message h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.5rem 0;
+    color: #2d3748;
   }
   
   .message h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 1.5rem 0 1rem;
-    color: #2c5282;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a365d;
+    margin: 0 0 2rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #4299e1;
+    text-align: center;  /* 标题居中 */
+    width: 100%;
+    letter-spacing: 0.05em;
+  }
+  
+  .message h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50%;
+    height: 2px;
+    background: #2b6cb0;
   }
   
   .message p {
-    margin: 1rem 0;
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: #2d3748;
+    margin: 1.2rem 0;
+    text-align: justify;
+    letter-spacing: 0.025em;
+    text-indent: 2em;  /* 段落首行缩进 */
+  }
+  
+  .message p:not(:first-of-type) {
+    text-indent: 2em;
+  }
+  
+  .message ul, .message ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+  
+  .message li {
+    margin: 0.8rem 0;
+    line-height: 1.6;
+    color: #2d3748;
+    position: relative;
+  }
+  
+  .message ul li::before {
+    content: "•";
+    color: #4299e1;
+    font-weight: bold;
+    position: absolute;
+    left: -1.2rem;
+  }
+  
+  .message code:not(pre code) {
+    background: #edf2f7;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #2d3748;
+  }
+  
+  .message blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-left: 4px solid #4299e1;
+    font-style: italic;
+    color: #4a5568;
+  }
+  
+  .message table {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+  }
+  
+  .message th, .message td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  
+  .message th {
+    background: #f7fafc;
+    font-weight: 600;
+  }
+  
+  .message hr {
+    margin: 2rem 0;
+    border: none;
+    height: 1px;
+    background: #e2e8f0;
+  }
+  
+  .message a {
+    color: #4299e1;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+  
+  .message a:hover {
+    border-bottom-color: #4299e1;
   }
   
   .userMessage {
@@ -104,6 +249,37 @@
     color: white;
     align-self: flex-end;
     margin-left: 15%;
+    padding: 1rem 1.5rem;  /* 减小内边距 */
+    font-size: 0.95rem;    /* 稍微减小字体大小 */
+    max-width: 70%;        /* 减小最大宽度 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px 12px 2px 12px;  /* 调整圆角，使其更像对话框 */
+    animation: userMessageSlideIn 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  @keyframes userMessageSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .userMessage::before {
+    content: '';
+    position: absolute;
+    right: -8px;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    background: #00796b;
+    border-radius: 0 0 0 20px;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
   }
   
   .assistantMessage {
@@ -111,6 +287,32 @@
     color: #1a202c;
     align-self: flex-start;
     margin-right: 15%;
+    animation: assistantMessageSlideIn 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  @keyframes assistantMessageSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .assistantMessage::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 0 0 20px 0;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
   }
   
   .partialResponse {
@@ -125,6 +327,8 @@
     white-space: pre-wrap;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
+    animation: assistantMessageSlideIn 0.3s ease-out;
+    position: relative;
   }
   
   /* 代码块的复制按钮 */
@@ -148,15 +352,25 @@
   
   .inputContainer {
     position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;  /* 进一步增加宽度 */
+    bottom: 0;
+    left: 250px;  /* 与侧边栏对齐 */
+    right: 0;
     background-color: white;
-    padding: 2rem;  /* 增加内边距 */
-    border-radius: 20px;  /* 增加圆角 */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);  /* 增强阴影效果 */
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
     z-index: 10;
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   /* 在现有样式的基础上添加以下内容 */
@@ -208,10 +422,13 @@
     cursor: pointer;
     font-size: 0.75rem;
     transition: background-color 0.2s;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
   }
   
   .copyButton:hover {
     background: rgba(0, 0, 0, 0.8);
+    transform: scale(1);
   }
   
   .codeCopyButton {
@@ -226,8 +443,328 @@
     cursor: pointer;
     font-size: 0.75rem;
     transition: background-color 0.2s;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
   }
   
   .codeCopyButton:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: scale(1);
+  }
+  
+  /* 论文相关样式 */
+  .message h3 + p {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+  }
+  
+  .message p strong {
+    color: #2c5282;
+    font-weight: 600;
+  }
+  
+  .message h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 2rem 0 1rem;
+    border-bottom: none;
+    display: block;
+    position: relative;
+    padding-left: 1rem;
+  }
+  
+  .message h3::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    bottom: 0.2rem;
+    width: 4px;
+    background: #4299e1;
+    border-radius: 2px;
+  }
+  
+  .message ul {
+    margin: 1rem 0 1rem 2rem;
+    list-style-type: none;
+  }
+  
+  .message ul li {
+    position: relative;
+    margin: 0.8rem 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+  }
+  
+  .message ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4299e1;
+    font-weight: bold;
+  }
+  
+  /* 调整用户消息的段落样式 */
+  .userMessage p {
+    margin: 0;            /* 移除段落边距 */
+    text-indent: 0;       /* 移除首行缩 */
+    font-size: inherit;   /* 继承父元素的字体大小 */
+    line-height: 1.5;     /* 调整行高 */
+  }
+  
+  /* 修改主内容区域的样式 */
+  .mainContent {
+    flex: 1;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  /* 修改侧边栏样式确保删除按钮可见 */
+  .sidebarFooter {
+    padding: 1rem;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+    position: sticky;
+    bottom: 0;
+    z-index: 20;  /* 确保在输入框之上 */
+  }
+  
+  .deleteButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .deleteButton:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+  }
+  
+  .deleteButton svg {
+    width: 16px;
+    height: 16px;
+    color: #e11d48;
+  }
+  
+  /* 添加或更新以下样式 */
+  .chatLayout {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background: #f8fafc;  /* 更柔和的背景色 */
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+  
+  .chatHistoriesContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  
+  .headerLeft {
+    display: flex;
+    align-items: center;
+  }
+  
+  .headerRight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+  
+  .userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  .userName {
+    color: white;
+    font-size: 0.9rem;
+  }
+  
+  .signOutButton {
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .signOutButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  /* 添加分隔线 */
+  .inputDivider {
+    position: fixed;
+    bottom: 90px;  /* 调整位置，在输入框上方 */
+    left: 250px;  /* 与侧边栏对齐 */
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, #e2e8f0, rgba(226, 232, 240, 0.1));
+    z-index: 9;
+  }
+  
+  .archiveButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .archiveButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  .archiveIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  /* 美化聊天历史记录项 */
+  .chatHistory {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .chatHistoryContent {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .chatHistoryDelete {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 4px;
+    border-radius: 4px;
+    background: #fee2e2;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+  }
+  
+  .chatHistory:hover .chatHistoryDelete {
+    opacity: 1;
+  }
+  
+  .chatHistoryDelete:hover {
+    background: #fecaca;
+  }
+  
+  .chatHistoryDelete svg {
+    width: 16px;
+    height: 16px;
+    color: #dc2626;
+  }
+  
+  .chatHistoryTitle {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .chatHistoryDate {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+  
+  /* 侧边栏顶部添加标题 */
+  .sidebarHeader {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: white;
+  }
+  
+  .sidebarTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    text-align: center;
+  }
+  
+  /* 添加打字机效果 */
+  @keyframes typing {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .partialResponse::after {
+    content: '▋';
+    display: inline-block;
+    vertical-align: middle;
+    animation: typing 0.5s infinite alternate;
+    color: #4299e1;
+    margin-left: 2px;
+  }
+  
+  /* 优化欢迎消息动画 */
+  .welcomeMessage {
+    /* ... 保持其他样式 ... */
+    animation: messagePopIn 0.5s ease-out;
   }

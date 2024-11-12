@@ -1,50 +1,26 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import styles from './Home.module.css'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { auth } from '@/lib/firebase'
 
 export default function Home() {
-  const [showModal, setShowModal] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    // 页面加载时显示弹窗
-    setShowModal(true)
+    // 检查用户登录状态
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // 如果已登录，跳转到聊天页面
+        router.push('/chat')
+      } else {
+        // 如果未登录，跳转到登录页面
+        router.push('/login')
+      }
+    })
 
-    // 3秒后自动关闭弹窗
-    const timer = setTimeout(() => {
-      setShowModal(false)
-    }, 3000)
+    return () => unsubscribe()
+  }, [router])
 
-    return () => clearTimeout(timer)
-  }, [])
-
-  return (
-    <div className={styles.container}>
-      {/* 主标题 */}
-      <h1 className={styles.title}>
-        欢迎来到云端的AI智能会话
-      </h1>
-
-      {/* 副标题 */}
-      <p className={styles.subtitle}>
-        体验智能对话的未来
-      </p>
-
-      {/* 入口按钮 */}
-      <Link 
-        href="/chat" 
-        className={styles.button}>
-        开始对话
-      </Link>
-
-      {/* 欢迎弹窗 */}
-      {showModal && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <p>你今天已经很棒啦！</p>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+  // 返回空内容，因为会立即重定向
+  return null
 } 
